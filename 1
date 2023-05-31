@@ -1,0 +1,121 @@
+1. 测序得到的原始数据 (raw data) 中包含接头序列及低质量碱基 (Q < 30)，首先经过
+fastp v0.19.5 (https://github.com/OpenGene/fastp) 去接头 (adapter) 及过滤碱基质
+量后得到高质量序列 (clean data) 以便用于后续分析：
+# Installation
+$ conda install -c bioconda fastp
+# Quality filter
+$ fastp -I $Sample_R1.fq.gz -I $Sample_R2.fq.gz -o 
+$Sample_clean_R1.fq -O $Sample_clean_R2.fq -l 50 -q 30 -t 10
+2. 高质量序列中仍包含大量的核糖体 RNA (rRNA)，通过 SortMeRNA version 2.1b 
+(https://github.com/biocore/sortmerna) 过滤 clean data 中的 rRNA 序列：
+# Installation
+$ conda install -c bioconda sortmerna=2.1b
+# rRNA filter
+$ sortmerna --ref $refdir/rRNA_databases/silva-arc-16sid95.fasta, $refdir /index/silva-arc-16s-id95: \
+$refdir/rRNA_db/silva-arc-23s-id98.fasta, 
+$refdir/index/silva-arc-23s-id98: \
+$refdir/rRNA_db/silva-bac-16s-id90.fasta, 
+$refdir/index/silva-bac-16s-id90: \
+$refdir/rRNA_db/silva-bac-23s-id98.fasta, 
+$refdir/index/silva-bac-23s-id98: \
+$refdir/rRNA_db/silva-euk-18s-id95.fasta, 
+$refdir/index/silva-euk-18s-id95: \
+$refdir/rRNA_db/silva-euk-28s-id98.fasta, 
+$refdir/index/silva-euk-28s-id98: \
+$refdir/rRNA_db/rfam-5s-database-id98.fasta, 
+$refdir/index/rfam-5s-database-id98: \
+$refdir/rRNA_db/rfam-5.8s-database-id98.fasta, 
+$refdir/index/rfam-5.8s-database-id98 \
+--reads $Sample_clean_R1.fq --reads $Sample_clean_R2.fq --
+fastx --other $Sample_rmRNA --aligned $Sample_aligned -a 30 
+-paired-out
+$ unmerge-paired-reads.sh $Sample_rmRNA.fq 
+$Sample_rmRNA_R1.fq $Sample_rmRNA_R2.fq
+rRNA 数据库下载路径：
+https://github.com/biocore/sortmerna/tree/master/data/rRNA_databases
+3. 通过 idba_tran v1.1.3 (https://github.com/loneknightpy/idba) 对转录组数据进行组
+装得到每个样本的转录组序列$Sample_assembly/contig.fa：
+# Installation
+$ conda install -c bioconda idba
+# Assembly
+$ $IDBA/bin/fq2fa –merge $Sample_rmRNA_R1.fq 
+$Sample_rmRNA_R2.fq $Sample_merge.fa
+$ $IDBA/bin/idba_tran -r $Sample_merge.fa -o $Sample_assembly 
+--pre_correction --mink 20 --maxk 60 --step 10 --num_threads 
+20
+4. 组装得到的 Contig 中包含非 mRNA 信息，使用 prodigal v2.6.3
+(https://github.com/hyattpd/Prodigal) 对蛋白质编码区进行预测：
+# Installation
+$ conda install -c bioconda prodigal 
+# ORFprediction
+$ prodigal -d $Sample_nul.fa -I $Sample_assembly/contig.fa -
+m -p meta
+5. 预测到每个个体样品的基因序列后，利用 CD-HIT v4.8.1 (http://weizhonglilab.org/cd-hit/) 对所有样品的基因进行聚类构建非冗余基因集 (gene catalogue.fa)：
+# Installation
+$ conda install -c bioconda cd-hit
+# Gene clustering
+$ cat $Sample*_nul.fa > all_gene.fa
+$ cd-hit-est -I all_gene.fa -c 0.95 -aS 0.9 -M 0 -o 
+all_gene_nr -T 40
+$ awk 'BEGIN{a=1}{if($0~/>/){print 
+">Unigene_"a;a+=1}else{print $0}}' all_gene_nr.fa >gene 
+catalogue.fa
+6. 样本中基因的表达量通过将 reads 比对到基因集 (gene catalogue.fa) 获得，通过
+将测序 reads 比对到基因序列上得到样品中基因表达量 (sample_fpkm.txt)。即使
+用 RSEM v1.3.1 (https://github.com/deweylab/RSEM) 对 bowtie2 (http://bowtiebio.sourceforge.net/bowtie2/index.shtml) 的比对结果进行统计，获得每个样本中
+每个基因的 reads counts，同时计算 FPKM。FPKM (全称 expected number of 
+Fragments Per Kilobase of transcript sequence per Millions base pairs sequenced) 
+是每百万 fragments 中来自Ḁ一基因每千碱基长度的 fragments 数目，其同时考虑
+了测序深度和基因长度对 fragments 计数的影响，是对 reads counts 进行标准化
+处理的目前最为常用的基因表达水平估算方法 (Trapnell 等，2010)。
+# Installation
+$ conda install -c bioconda rsem= 1.3.1
+# Expression calculate
+$ rsem-calculate-expression -p 70 --bowtie2 --paired-end \
+$Sample_rmRNA_R1.fq $Sample_rmRNA_R2.fq rsem.ref $Sample
+$ for i in `$Sample*.genes.results`; \
+do cut -f 1,7 $i >${i/gene.results/FPKM.txt}; \
+done
+$ python merge_metaphlan_tables.py $Sample*.FPKM.txt > 
+all_sample_fpkm.txt 
+(脚本下载链接: 
+http://github.com/biobakery/MetaPhlAn/blob/master/metaphlan/merge_metaphlan
+_tables.py)
+7. 使用 diamond 软件将非冗余的 Unigenes 序列与 NCBI-NR 数据库进行比对 (设定
+阈值为 e-value ≤ 1e-5)，采取最近公共祖先 LCA (Lowest Common Ancestor)算法
+获得基因序列的物种注释信息：
+# Installation
+$ mkdir $HOME/gocode
+$ export GOPATH=$HOME/gocode/bin
+$ export PATH=$PATH:GOPATH
+$ go get github.com/emepyc/Blast2lca/blast2lca
+# KEGG annotation
+$ diamond blastp –threads 20 -q Unigenes_pro.fa -d 
+nr_*version.dmnd -o Unigenes_vs_nr_blt.txt --max-target-seqs 
+10 –evalue 1e-5 --outfmt 6 qseqid qlen sseqid stitle slen
+pident length mismatch gapopen qstart qend sstart send evalue 
+bitscore
+$ blast2lca -input Unigenes_vs_nr_blt.txt -o 
+Unigenes_vs_nr_blt.tax -ms 50 -me 0.000001 -g2t gi_taxidMarch2015X.bin
+gi号版本：https://pan.baidu.com/s/1Ekt8aSsoGjkZwr6PsZDKPA，ᨀ取码：i21t )
+(accession 版本:https://pan.baidu.com/s/1WdZEaI1KPIMQ0PEv31lduw，ᨀ取码：
+5xfu)
+8. 通过将基因序列和特定数据库 (如 KEGG) 进行比对，完成基因功能注释。序列比
+对使用 diamond v0.1.10 (https://github.com/bbuchfink/diamond) 软件进行。
+KEGG 数据库 (https://pan.baidu.com/s/1jnulGNSQ3qDfoB3b76a0Dg，ᨀ取码：
+jzal,链接永久有效。
+# Installation
+$ conda install -c bioconda diamond=0.9.10
+# Annotation
+$ diamond makedb –in meta.pep -d meta.dmnd
+$ diamond blastp -d meta.dmnd -q Unigenes_pro.fa -k 1 -p 50 
+-f 6 -o Unigenes_vs_kegg_blt.txt 
+三、结果分析
+通过和 KEGG 数据库中的 KO 数据库进行比对，得到不同层次的基因功能分类 (图 2)。
+以一种酸性土壤样本为例，从 KO level 1 层次来看，土壤微生物的大部分活性基因与
+新陈代谢 (Metabolism) 相关，占总体基因表达量的 45.7%，其次为遗传信息加工
+(Genetic information processing，8.5%)，环境信息加工 (Environmental information 
+processing，9.6%) 和细胞过程 (Cellular processes，8.2%)。KO level 2 层次上的基因
+功能分类如图 2。从图中可以看出，微生物新陈代谢相关的活动主要表现为能量代谢、
+碳水化合物代谢和氨基酸代谢；遗传信息加工主要表现在蛋白翻译；环境信息加工主
+要包括信号转导和膜转运；而细胞过程相关的基因主要参与了 cellular communityeukaryotes 和细胞迁移 (cell motility)。
