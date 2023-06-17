@@ -1,0 +1,13 @@
+sortmerna --threads 48 \
+--ref /mnt/disk2/shuping/sortmerna_db/rRNA_databases/silva-bac-16s-id90.fasta \
+--ref /mnt/disk2/shuping/sortmerna_db/rRNA_databases/silva-bac-23s-id98.fasta \
+--ref /mnt/disk2/shuping/sortmerna_db/rRNA_databases/silva-arc-16s-id95.fasta \
+--ref /mnt/disk2/shuping/sortmerna_db/rRNA_databases/silva-arc-23s-id98.fasta \
+--ref /mnt/disk2/shuping/sortmerna_db/rRNA_databases/silva-euk-18s-id95.fasta \
+--ref /mnt/disk2/shuping/sortmerna_db/rRNA_databases/silva-euk-28s-id98.fasta \
+--ref /mnt/disk2/shuping/sortmerna_db/rRNA_databases/rfam-5s-database-id98.fasta \
+--ref /mnt/disk2/shuping/sortmerna_db/rRNA_databases/rfam-5.8s-database-id98.fasta \
+--workdir ./ \
+--reads 1202_3_FRAS202120117-1r_1.clean.fq.gz \
+--reads 1202_3_FRAS202120117-1r_2.clean.fq.gz \
+--aligned "1202_3_FRAS202120117-1r _rRNA" --other "1202_3_FRAS202120117-1r _clean" --paired_in --fastx --out2
