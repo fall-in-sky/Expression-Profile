@@ -1,0 +1,1451 @@
+cd-hit
+                ====== CD-HIT version 4.8.1 (built on May 15 2023) ======
+
+Usage: cd-hit [Options]
+
+Options
+
+   -i   input filename in fasta format, required, can be in .gz format
+   -o   output filename, required
+   -c   sequence identity threshold, default 0.9
+        this is the default cd-hit's "global sequence identity" calculated as:
+        number of identical amino acids or bases in alignment
+        divided by the full length of the shorter sequence
+   -G   use global sequence identity, default 1
+        if set to 0, then use local sequence identity, calculated as :
+        number of identical amino acids or bases in alignment
+        divided by the length of the alignment
+        NOTE!!! don't use -G 0 unless you use alignment coverage controls
+        see options -aL, -AL, -aS, -AS
+   -b   band_width of alignment, default 20
+   -M   memory limit (in MB) for the program, default 800; 0 for unlimitted;
+   -T   number of threads, default 1; with 0, all CPUs will be used
+   -n   word_length, default 5, see user's guide for choosing it
+   -l   length of throw_away_sequences, default 10
+   -t   tolerance for redundance, default 2
+   -d   length of description in .clstr file, default 20
+        if set to 0, it takes the fasta defline and stops at first space
+   -s   length difference cutoff, default 0.0
+        if set to 0.9, the shorter sequences need to be
+        at least 90% length of the representative of the cluster
+   -S   length difference cutoff in amino acid, default 999999
+        if set to 60, the length difference between the shorter sequences
+        and the representative of the cluster can not be bigger than 60
+   -aL  alignment coverage for the longer sequence, default 0.0
+        if set to 0.9, the alignment must covers 90% of the sequence
+   -AL  alignment coverage control for the longer sequence, default 99999999
+        if set to 60, and the length of the sequence is 400,
+        then the alignment must be >= 340 (400-60) residues
+   -aS  alignment coverage for the shorter sequence, default 0.0
+        if set to 0.9, the alignment must covers 90% of the sequence
+   -AS  alignment coverage control for the shorter sequence, default 99999999
+        if set to 60, and the length of the sequence is 400,
+        then the alignment must be >= 340 (400-60) residues
+   -A   minimal alignment coverage control for the both sequences, default 0
+        alignment must cover >= this value for both sequences
+   -uL  maximum unmatched percentage for the longer sequence, default 1.0
+        if set to 0.1, the unmatched region (excluding leading and tailing gaps)
+        must not be more than 10% of the sequence
+   -uS  maximum unmatched percentage for the shorter sequence, default 1.0
+        if set to 0.1, the unmatched region (excluding leading and tailing gaps)
+        must not be more than 10% of the sequence
+   -U   maximum unmatched length, default 99999999
+        if set to 10, the unmatched region (excluding leading and tailing gaps)
+        must not be more than 10 bases
+   -B   1 or 0, default 0, by default, sequences are stored in RAM
+        if set to 1, sequence are stored on hard drive
+        !! No longer supported !!
+   -p   1 or 0, default 0
+        if set to 1, print alignment overlap in .clstr file
+   -g   1 or 0, default 0
+        by cd-hit's default algorithm, a sequence is clustered to the first
+        cluster that meet the threshold (fast cluster). If set to 1, the program
+        will cluster it into the most similar cluster that meet the threshold
+        (accurate but slow mode)
+        but either 1 or 0 won't change the representatives of final clusters
+   -sc  sort clusters by size (number of sequences), default 0, output clusters by decreasing length
+        if set to 1, output clusters by decreasing size
+   -sf  sort fasta/fastq by cluster size (number of sequences), default 0, no sorting
+        if set to 1, output sequences by decreasing cluster size
+        this can be very slow if the input is in .gz format
+   -bak write backup cluster file (1 or 0, default 0)
+   -h   print this help
+
+   Questions, bugs, contact Weizhong Li at liwz@sdsc.edu
+   For updated versions and information, please visit: http://cd-hit.org
+                                                    or https://github.com/weizhongli/cdhit
+
+   cd-hit web server is also available from http://cd-hit.org
+
+   If you find cd-hit useful, please kindly cite:
+
+   "CD-HIT: a fast program for clustering and comparing large sets of protein or nucleotide sequences", Weizhong Li & Adam Godzik. Bioinformatics, (2006) 22:1658-1659
+   "CD-HIT: accelerated for clustering the next generation sequencing data", Limin Fu, Beifang Niu, Zhengwei Zhu, Sitao Wu & Weizhong Li. Bioinformatics, (2012) 28:3150-3152
+======CD-HIT版本4.8.1（构建于2023年5月15日）======
+用法：cd hit[选项]
+选项
+-我输入的文件名是fasta格式，必需的，可以是.gz格式
+
+-o输出文件名，必需
+
+-c序列身份阈值，默认0.9
+
+这是默认cd hit的“全局序列标识”，计算如下：
+
+排列的相同氨基酸或碱基的数量
+
+除以较短序列的全长
+
+-G使用全局序列标识，默认为1
+
+如果设置为0，则使用本地序列标识，计算如下：
+
+排列的相同氨基酸或碱基的数量
+
+除以路线的长度
+
+注意！！！除非使用对齐覆盖控制，否则不要使用-G 0
+
+请参阅选项-aL、-aL、-aS、-aS
+
+-b波段_对准宽度，默认值20
+
+-M程序的内存限制（MB），默认为800；0表示未发光；
+
+-T线程数，默认为1；使用0时，将使用所有CPU
+
+-n word_length，默认值为5，请参阅用户指南进行选择
+
+-l throw_away_sequences的长度，默认为10
+
+-t冗余容差，默认值2
+
+-d.clstr文件中描述的长度，默认为20
+
+如果设置为0，则执行fasta defline并在第一个空格处停止
+
+-s长度差截止值，默认值0.0
+
+如果设置为0.9，则较短的序列需要
+
+集群代表的长度至少为90%
+
+-以氨基酸为单位的S长度差截止值，默认值为999999
+
+如果设置为60，则较短序列之间的长度差
+
+并且集群的代表不能大于60
+
+-aL较长序列的对齐覆盖范围，默认值为0.0
+
+如果设置为0.9，则对齐必须覆盖序列的90%
+
+-较长序列的AL对齐覆盖控制，默认值为99999999
+
+如果设置为60并且序列的长度为400，
+
+则排列必须>=340（400-60）个残基
+
+-aS较短序列的对齐覆盖率，默认为0.0
+
+如果设置为0.9，则对齐必须覆盖序列的90%
+
+-较短序列的AS对准覆盖控制，默认为99999999
+
+如果设置为60并且序列的长度为400，
+
+则排列必须>=340（400-60）个残基
+
+-两个序列的最小比对覆盖控制，默认为0
+
+对齐必须覆盖>=这两个序列的值
+
+-uL较长序列的最大不匹配百分比，默认值为1.0
+
+如果设置为0.1，则为不匹配的区域（不包括前导和尾随间隙）
+
+不得超过序列的10%
+
+-uS较短序列的最大不匹配百分比，默认值为1.0
+
+如果设置为0.1，则为不匹配的区域（不包括前导和尾随间隙）
+
+不得超过序列的10%
+
+-U最大不匹配长度，默认为99999999
+
+如果设置为10，则不匹配的区域（不包括前导和尾随间隙）
+
+不得超过10个基数
+
+-B1或0，默认为0，默认情况下，序列存储在RAM中
+
+如果设置为1，则序列存储在硬盘上
+
+！！不再支持！！
+
+-p 1或0，默认为0
+
+如果设置为1，则在.clstr文件中打印对齐重叠
+
+-g 1或0，默认为0
+
+根据cd hit的默认算法，序列被聚集到第一个
+
+满足阈值的集群（快速集群）。如果设置为1，程序
+
+将其聚类为符合阈值的最相似的聚类
+
+（精确但缓慢模式）
+
+但是1或0不会改变最终集群的代表
+
+-sc按大小（序列数）对集群进行排序，默认为0，按递减长度输出集群
+
+如果设置为1，则通过减小大小输出集群
+
+-sf根据集群大小（序列数）对fasta/fastq进行排序，默认为0，不进行排序
+
+如果设置为1，则通过减小簇大小来输出序列
+
+如果输入是.gz格式，这可能会非常慢
+
+-bak写入备份群集文件（1或0，默认为0）
+
+-h打印此帮助
+
+问题，bug，联系李伟忠liwz@sdsc.edu
+
+有关更新版本和信息，请访问：http://cd-hit.org
+
+或https://github.com/weizhongli/cdhit
+
+cd hit web服务器也可从http://cd-hit.org
+
+如果你觉得cd hit有用，请引用：
+
+“CD-HIT:一个用于聚类和比较大型蛋白质或核苷酸序列的快速程序”，李伟忠和Adam Godzik。生物信息学，（2006）22:1658-1659
+
+“CD-HIT:加速下一代测序数据的聚类”，傅利民，牛北方，朱正伟，吴思涛，李伟忠.生物信息学，（2012）28:3150-3152
+
+NAME
+    rsem-calculate-expression
+
+SYNOPSIS
+     rsem-calculate-expression [options] upstream_read_file(s) reference_name sample_name
+     rsem-calculate-expression [options] --paired-end upstream_read_file(s) downstream_read_file(s) reference_name sample_name
+     rsem-calculate-expression [options] --alignments [--paired-end] input reference_name sample_name
+
+ARGUMENTS
+    upstream_read_files(s)
+        Comma-separated list of files containing single-end reads or
+        upstream reads for paired-end data. By default, these files are
+        assumed to be in FASTQ format. If the --no-qualities option is
+        specified, then FASTA format is expected.
+
+    downstream_read_file(s)
+        Comma-separated list of files containing downstream reads which are
+        paired with the upstream reads. By default, these files are assumed
+        to be in FASTQ format. If the --no-qualities option is specified,
+        then FASTA format is expected.
+
+    input
+        SAM/BAM/CRAM formatted input file. If "-" is specified for the
+        filename, the input is instead assumed to come from standard input.
+        RSEM requires all alignments of the same read group together. For
+        paired-end reads, RSEM also requires the two mates of any alignment
+        be adjacent. In addition, RSEM does not allow the SEQ and QUAL
+        fields to be empty. See Description section for how to make input
+        file obey RSEM's requirements.
+
+    reference_name
+        The name of the reference used. The user must have run
+        'rsem-prepare-reference' with this reference_name before running
+        this program.
+
+    sample_name
+        The name of the sample analyzed. All output files are prefixed by
+        this name (e.g., sample_name.genes.results)
+
+BASIC OPTIONS
+    --paired-end
+        Input reads are paired-end reads. (Default: off)
+
+    --no-qualities
+        Input reads do not contain quality scores. (Default: off)
+
+    --strand-specific
+        The RNA-Seq protocol used to generate the reads is strand specific,
+        i.e., all (upstream) reads are derived from the forward strand. This
+        option is equivalent to --forward-prob=1.0. With this option set, if
+        RSEM runs the Bowtie/Bowtie 2 aligner, the '--norc' Bowtie/Bowtie 2
+        option will be used, which disables alignment to the reverse strand
+        of transcripts. (Default: off)
+
+    -p/--num-threads <int>
+        Number of threads to use. Both Bowtie/Bowtie2, expression estimation
+        and 'samtools sort' will use this many threads. (Default: 1)
+
+    --alignments
+        Input file contains alignments in SAM/BAM/CRAM format. The exact
+        file format will be determined automatically. (Default: off)
+
+    --fai <file>
+        RSEM reads header information from input by default. If this option
+        is on, header information is read from the specified file. For the
+        format of the file, please see SAM official website. (Default: off)
+
+    --bowtie2
+        Use Bowtie 2 instead of Bowtie to align reads. Since currently RSEM
+        does not handle indel, local and discordant alignments, the Bowtie2
+        parameters are set in a way to avoid those alignments. In
+        particular, we use options '--sensitive --dpad 0 --gbar 99999999
+        --mp 1,1 --np 1 --score-min L,0,-0.1' by default. The last parameter
+        of '--score-min', '-0.1', is the negative of maximum mismatch rate.
+        This rate can be set by option '--bowtie2-mismatch-rate'. If reads
+        are paired-end, we additionally use options '--no-mixed' and
+        '--no-discordant'. (Default: off)
+
+    --star
+        Use STAR to align reads. Alignment parameters are from ENCODE3's
+        STAR-RSEM pipeline. To save computational time and memory resources,
+        STAR's Output BAM file is unsorted. It is stored in RSEM's temporary
+        directory with name as 'sample_name.bam'. Each STAR job will have
+        its own private copy of the genome in memory. (Default: off)
+
+    --append-names
+        If gene_name/transcript_name is available, append it to the end of
+        gene_id/transcript_id (separated by '_') in files
+        'sample_name.isoforms.results' and 'sample_name.genes.results'.
+        (Default: off)
+
+    --seed <uint32>
+        Set the seed for the random number generators used in calculating
+        posterior mean estimates and credibility intervals. The seed must be
+        a non-negative 32 bit interger. (Default: off)
+
+    --single-cell-prior
+        By default, RSEM uses Dirichlet(1) as the prior to calculate
+        posterior mean estimates and credibility intervals. However, much
+        less genes are expressed in single cell RNA-Seq data. Thus, if you
+        want to compute posterior mean estimates and/or credibility
+        intervals and you have single-cell RNA-Seq data, you are recommended
+        to turn on this option. Then RSEM will use Dirichlet(0.1) as the
+        prior which encourage the sparsity of the expression levels.
+        (Default: off)
+
+    --calc-pme
+        Run RSEM's collapsed Gibbs sampler to calculate posterior mean
+        estimates. (Default: off)
+
+    --calc-ci
+        Calculate 95% credibility intervals and posterior mean estimates.
+        The credibility level can be changed by setting
+        '--ci-credibility-level'. (Default: off)
+
+    -q/--quiet
+        Suppress the output of logging information. (Default: off)
+
+    -h/--help
+        Show help information.
+
+    --version
+        Show version information.
+
+OUTPUT OPTIONS
+    --sort-bam-by-read-name
+        Sort BAM file aligned under transcript coordidate by read name.
+        Setting this option on will produce determinstic maximum likelihood
+        estimations from independent runs. Note that sorting will take long
+        time and lots of memory. (Default: off)
+
+    --no-bam-output
+        Do not output any BAM file. (Default: off)
+
+    --sampling-for-bam
+        When RSEM generates a BAM file, instead of outputing all alignments
+        a read has with their posterior probabilities, one alignment is
+        sampled according to the posterior probabilities. The sampling
+        procedure includes the alignment to the "noise" transcript, which
+        does not appear in the BAM file. Only the sampled alignment has a
+        weight of 1. All other alignments have weight 0. If the "noise"
+        transcript is sampled, all alignments appeared in the BAM file
+        should have weight 0. (Default: off)
+
+    --output-genome-bam
+        Generate a BAM file, 'sample_name.genome.bam', with alignments
+        mapped to genomic coordinates and annotated with their posterior
+        probabilities. In addition, RSEM will call samtools (included in
+        RSEM package) to sort and index the bam file.
+        'sample_name.genome.sorted.bam' and
+        'sample_name.genome.sorted.bam.bai' will be generated. (Default:
+        off)
+
+    --sort-bam-by-coordinate
+        Sort RSEM generated transcript and genome BAM files by coordinates
+        and build associated indices. (Default: off)
+
+    --sort-bam-memory <string>
+        Set the maximum memory per thread that can be used by 'samtools
+        sort'. <string> represents the memory and accepts suffices 'K/M/G'.
+        RSEM will pass <string> to the '-m' option of 'samtools sort'. Note
+        that the default used here is different from the default used by
+        samtools. (Default: 1G)
+
+ALIGNER OPTIONS
+    --seed-length <int>
+        Seed length used by the read aligner. Providing the correct value is
+        important for RSEM. If RSEM runs Bowtie, it uses this value for
+        Bowtie's seed length parameter. Any read with its or at least one of
+        its mates' (for paired-end reads) length less than this value will
+        be ignored. If the references are not added poly(A) tails, the
+        minimum allowed value is 5, otherwise, the minimum allowed value is
+        25. Note that this script will only check if the value >= 5 and give
+        a warning message if the value < 25 but >= 5. (Default: 25)
+
+    --phred33-quals
+        Input quality scores are encoded as Phred+33. (Default: on)
+
+    --phred64-quals
+        Input quality scores are encoded as Phred+64 (default for GA
+        Pipeline ver. >= 1.3). (Default: off)
+
+    --solexa-quals
+        Input quality scores are solexa encoded (from GA Pipeline ver. <
+        1.3). (Default: off)
+
+    --bowtie-path <path>
+        The path to the Bowtie executables. (Default: the path to the Bowtie
+        executables is assumed to be in the user's PATH environment
+        variable)
+
+    --bowtie-n <int>
+        (Bowtie parameter) max # of mismatches in the seed. (Range: 0-3,
+        Default: 2)
+
+    --bowtie-e <int>
+        (Bowtie parameter) max sum of mismatch quality scores across the
+        alignment. (Default: 99999999)
+
+    --bowtie-m <int>
+        (Bowtie parameter) suppress all alignments for a read if > <int>
+        valid alignments exist. (Default: 200)
+
+    --bowtie-chunkmbs <int>
+        (Bowtie parameter) memory allocated for best first alignment
+        calculation (Default: 0 - use Bowtie's default)
+
+    --bowtie2-path <path>
+        (Bowtie 2 parameter) The path to the Bowtie 2 executables. (Default:
+        the path to the Bowtie 2 executables is assumed to be in the user's
+        PATH environment variable)
+
+    --bowtie2-mismatch-rate <double>
+        (Bowtie 2 parameter) The maximum mismatch rate allowed. (Default:
+        0.1)
+
+    --bowtie2-k <int>
+        (Bowtie 2 parameter) Find up to <int> alignments per read. (Default:
+        200)
+
+    --bowtie2-sensitivity-level <string>
+        (Bowtie 2 parameter) Set Bowtie 2's preset options in --end-to-end
+        mode. This option controls how hard Bowtie 2 tries to find
+        alignments. <string> must be one of "very_fast", "fast", "sensitive"
+        and "very_sensitive". The four candidates correspond to Bowtie 2's
+        "--very-fast", "--fast", "--sensitive" and "--very-sensitive"
+        options. (Default: "sensitive" - use Bowtie 2's default)
+
+    --star-path <path>
+        The path to STAR's executable. (Default: the path to STAR executable
+        is assumed to be in user's PATH environment variable)
+
+    --star-gzipped-read-file
+        (STAR parameter) Input read file(s) is compressed by gzip. (Default:
+        off)
+
+    --star-bzipped-read-file
+        (STAR parameter) Input read file(s) is compressed by bzip2.
+        (Default: off)
+
+    --star-output-genome-bam
+        (STAR parameter) Save the BAM file from STAR alignment under genomic
+        coordinate to 'sample_name.STAR.genome.bam'. This file is NOT sorted
+        by genomic coordinate. In this file, according to STAR's manual,
+        'paired ends of an alignment are always adjacent, and multiple
+        alignments of a read are adjacent as well'. (Default: off)
+
+ADVANCED OPTIONS
+    --tag <string>
+        The name of the optional field used in the SAM input for identifying
+        a read with too many valid alignments. The field should have the
+        format <tagName>:i:<value>, where a <value> bigger than 0 indicates
+        a read with too many alignments. (Default: "")
+
+    --forward-prob <double>
+        Probability of generating a read from the forward strand of a
+        transcript. Set to 1 for a strand-specific protocol where all
+        (upstream) reads are derived from the forward strand, 0 for a
+        strand-specific protocol where all (upstream) read are derived from
+        the reverse strand, or 0.5 for a non-strand-specific protocol.
+        (Default: 0.5)
+
+    --fragment-length-min <int>
+        Minimum read/insert length allowed. This is also the value for the
+        Bowtie/Bowtie2 -I option. (Default: 1)
+
+    --fragment-length-max <int>
+        Maximum read/insert length allowed. This is also the value for the
+        Bowtie/Bowtie 2 -X option. (Default: 1000)
+
+    --fragment-length-mean <double>
+        (single-end data only) The mean of the fragment length distribution,
+        which is assumed to be a Gaussian. (Default: -1, which disables use
+        of the fragment length distribution)
+
+    --fragment-length-sd <double>
+        (single-end data only) The standard deviation of the fragment length
+        distribution, which is assumed to be a Gaussian. (Default: 0, which
+        assumes that all fragments are of the same length, given by the
+        rounded value of --fragment-length-mean)
+
+    --estimate-rspd
+        Set this option if you want to estimate the read start position
+        distribution (RSPD) from data. Otherwise, RSEM will use a uniform
+        RSPD. (Default: off)
+
+    --num-rspd-bins <int>
+        Number of bins in the RSPD. Only relevant when '--estimate-rspd' is
+        specified. Use of the default setting is recommended. (Default: 20)
+
+    --gibbs-burnin <int>
+        The number of burn-in rounds for RSEM's Gibbs sampler. Each round
+        passes over the entire data set once. If RSEM can use multiple
+        threads, multiple Gibbs samplers will start at the same time and all
+        samplers share the same burn-in number. (Default: 200)
+
+    --gibbs-number-of-samples <int>
+        The total number of count vectors RSEM will collect from its Gibbs
+        samplers. (Default: 1000)
+
+    --gibbs-sampling-gap <int>
+        The number of rounds between two succinct count vectors RSEM
+        collects. If the count vector after round N is collected, the count
+        vector after round N + <int> will also be collected. (Default: 1)
+
+    --ci-credibility-level <double>
+        The credibility level for credibility intervals. (Default: 0.95)
+
+    --ci-memory <int>
+        Maximum size (in memory, MB) of the auxiliary buffer used for
+        computing credibility intervals (CI). (Default: 1024)
+
+    --ci-number-of-samples-per-count-vector <int>
+        The number of read generating probability vectors sampled per
+        sampled count vector. The crebility intervals are calculated by
+        first sampling P(C | D) and then sampling P(Theta | C) for each
+        sampled count vector. This option controls how many Theta vectors
+        are sampled per sampled count vector. (Default: 50)
+
+    --keep-intermediate-files
+        Keep temporary files generated by RSEM. RSEM creates a temporary
+        directory, 'sample_name.temp', into which it puts all intermediate
+        output files. If this directory already exists, RSEM overwrites all
+        files generated by previous RSEM runs inside of it. By default,
+        after RSEM finishes, the temporary directory is deleted. Set this
+        option to prevent the deletion of this directory and the
+        intermediate files inside of it. (Default: off)
+
+    --temporary-folder <string>
+        Set where to put the temporary files generated by RSEM. If the
+        folder specified does not exist, RSEM will try to create it.
+        (Default: sample_name.temp)
+
+    --time
+        Output time consumed by each step of RSEM to 'sample_name.time'.
+        (Default: off)
+
+DESCRIPTION
+    In its default mode, this program aligns input reads against a reference
+    transcriptome with Bowtie and calculates expression values using the
+    alignments. RSEM assumes the data are single-end reads with quality
+    scores, unless the '--paired-end' or '--no-qualities' options are
+    specified. Alternatively, users can use STAR to align reads using the
+    '--star' option. RSEM has provided options in 'rsem-prepare-reference'
+    to prepare STAR's genome indices. Users may use an alternative aligner
+    by specifying '--alignments', and providing an alignment file in
+    SAM/BAM/CRAM format. However, users should make sure that they align
+    against the indices generated by 'rsem-prepare-reference' and the
+    alignment file satisfies the requirements mentioned in ARGUMENTS
+    section.
+
+    One simple way to make the alignment file satisfying RSEM's requirements
+    is to use the 'convert-sam-for-rsem' script. This script accepts
+    SAM/BAM/CRAM files as input and outputs a BAM file. For example, type
+    the following command to convert a SAM file, 'input.sam', to a
+    ready-for-use BAM file, 'input_for_rsem.bam':
+
+      convert-sam-for-rsem input.sam input_for_rsem
+
+    For details, please refer to 'convert-sam-for-rsem's documentation page.
+
+NOTES
+    1. Users must run 'rsem-prepare-reference' with the appropriate
+    reference before using this program.
+
+    2. For single-end data, it is strongly recommended that the user provide
+    the fragment length distribution parameters (--fragment-length-mean and
+    --fragment-length-sd). For paired-end data, RSEM will automatically
+    learn a fragment length distribution from the data.
+
+    3. Some aligner parameters have default values different from their
+    original settings.
+
+    4. With the '--calc-pme' option, posterior mean estimates will be
+    calculated in addition to maximum likelihood estimates.
+
+    5. With the '--calc-ci' option, 95% credibility intervals and posterior
+    mean estimates will be calculated in addition to maximum likelihood
+    estimates.
+
+    6. The temporary directory and all intermediate files will be removed
+    when RSEM finishes unless '--keep-intermediate-files' is specified.
+
+OUTPUT
+    sample_name.isoforms.results
+        File containing isoform level expression estimates. The first line
+        contains column names separated by the tab character. The format of
+        each line in the rest of this file is:
+
+        transcript_id gene_id length effective_length expected_count TPM
+        FPKM IsoPct [posterior_mean_count
+        posterior_standard_deviation_of_count pme_TPM pme_FPKM
+        IsoPct_from_pme_TPM TPM_ci_lower_bound TPM_ci_upper_bound
+        TPM_coefficient_of_quartile_variation FPKM_ci_lower_bound
+        FPKM_ci_upper_bound FPKM_coefficient_of_quartile_variation]
+
+        Fields are separated by the tab character. Fields within "[]" are
+        optional. They will not be presented if neither '--calc-pme' nor
+        '--calc-ci' is set.
+
+        'transcript_id' is the transcript name of this transcript. 'gene_id'
+        is the gene name of the gene which this transcript belongs to
+        (denote this gene as its parent gene). If no gene information is
+        provided, 'gene_id' and 'transcript_id' are the same.
+
+        'length' is this transcript's sequence length (poly(A) tail is not
+        counted). 'effective_length' counts only the positions that can
+        generate a valid fragment. If no poly(A) tail is added,
+        'effective_length' is equal to transcript length - mean fragment
+        length + 1. If one transcript's effective length is less than 1,
+        this transcript's both effective length and abundance estimates are
+        set to 0.
+
+        'expected_count' is the sum of the posterior probability of each
+        read comes from this transcript over all reads. Because 1) each read
+        aligning to this transcript has a probability of being generated
+        from background noise; 2) RSEM may filter some alignable low quality
+        reads, the sum of expected counts for all transcript are generally
+        less than the total number of reads aligned.
+
+        'TPM' stands for Transcripts Per Million. It is a relative measure
+        of transcript abundance. The sum of all transcripts' TPM is 1
+        million. 'FPKM' stands for Fragments Per Kilobase of transcript per
+        Million mapped reads. It is another relative measure of transcript
+        abundance. If we define l_bar be the mean transcript length in a
+        sample, which can be calculated as
+
+        l_bar = \sum_i TPM_i / 10^6 * effective_length_i (i goes through
+        every transcript),
+
+        the following equation is hold:
+
+        FPKM_i = 10^3 / l_bar * TPM_i.
+
+        We can see that the sum of FPKM is not a constant across samples.
+
+        'IsoPct' stands for isoform percentage. It is the percentage of this
+        transcript's abandunce over its parent gene's abandunce. If its
+        parent gene has only one isoform or the gene information is not
+        provided, this field will be set to 100.
+
+        'posterior_mean_count', 'pme_TPM', 'pme_FPKM' are posterior mean
+        estimates calculated by RSEM's Gibbs sampler.
+        'posterior_standard_deviation_of_count' is the posterior standard
+        deviation of counts. 'IsoPct_from_pme_TPM' is the isoform percentage
+        calculated from 'pme_TPM' values.
+
+        'TPM_ci_lower_bound', 'TPM_ci_upper_bound', 'FPKM_ci_lower_bound'
+        and 'FPKM_ci_upper_bound' are lower(l) and upper(u) bounds of 95%
+        credibility intervals for TPM and FPKM values. The bounds are
+        inclusive (i.e. [l, u]).
+
+        'TPM_coefficient_of_quartile_variation' and
+        'FPKM_coefficient_of_quartile_variation' are coefficients of
+        quartile variation (CQV) for TPM and FPKM values. CQV is a robust
+        way of measuring the ratio between the standard deviation and the
+        mean. It is defined as
+
+        CQV := (Q3 - Q1) / (Q3 + Q1),
+
+        where Q1 and Q3 are the first and third quartiles.
+
+    sample_name.genes.results
+        File containing gene level expression estimates. The first line
+        contains column names separated by the tab character. The format of
+        each line in the rest of this file is:
+
+        gene_id transcript_id(s) length effective_length expected_count TPM
+        FPKM [posterior_mean_count posterior_standard_deviation_of_count
+        pme_TPM pme_FPKM TPM_ci_lower_bound TPM_ci_upper_bound
+        TPM_coefficient_of_quartile_variation FPKM_ci_lower_bound
+        FPKM_ci_upper_bound FPKM_coefficient_of_quartile_variation]
+
+        Fields are separated by the tab character. Fields within "[]" are
+        optional. They will not be presented if neither '--calc-pme' nor
+        '--calc-ci' is set.
+
+        'transcript_id(s)' is a comma-separated list of transcript_ids
+        belonging to this gene. If no gene information is provided,
+        'gene_id' and 'transcript_id(s)' are identical (the
+        'transcript_id').
+
+        A gene's 'length' and 'effective_length' are defined as the weighted
+        average of its transcripts' lengths and effective lengths (weighted
+        by 'IsoPct'). A gene's abundance estimates are just the sum of its
+        transcripts' abundance estimates.
+
+    sample_name.alleles.results
+        Only generated when the RSEM references are built with
+        allele-specific transcripts.
+
+        This file contains allele level expression estimates for
+        allele-specific expression calculation. The first line contains
+        column names separated by the tab character. The format of each line
+        in the rest of this file is:
+
+        allele_id transcript_id gene_id length effective_length
+        expected_count TPM FPKM AlleleIsoPct AlleleGenePct
+        [posterior_mean_count posterior_standard_deviation_of_count pme_TPM
+        pme_FPKM AlleleIsoPct_from_pme_TPM AlleleGenePct_from_pme_TPM
+        TPM_ci_lower_bound TPM_ci_upper_bound
+        TPM_coefficient_of_quartile_variation FPKM_ci_lower_bound
+        FPKM_ci_upper_bound FPKM_coefficient_of_quartile_variation]
+
+        Fields are separated by the tab character. Fields within "[]" are
+        optional. They will not be presented if neither '--calc-pme' nor
+        '--calc-ci' is set.
+
+        'allele_id' is the allele-specific name of this allele-specific
+        transcript.
+
+        'AlleleIsoPct' stands for allele-specific percentage on isoform
+        level. It is the percentage of this allele-specific transcript's
+        abundance over its parent transcript's abundance. If its parent
+        transcript has only one allele variant form, this field will be set
+        to 100.
+
+        'AlleleGenePct' stands for allele-specific percentage on gene level.
+        It is the percentage of this allele-specific transcript's abundance
+        over its parent gene's abundance.
+
+        'AlleleIsoPct_from_pme_TPM' and 'AlleleGenePct_from_pme_TPM' have
+        similar meanings. They are calculated based on posterior mean
+        estimates.
+
+        Please note that if this file is present, the fields 'length' and
+        'effective_length' in 'sample_name.isoforms.results' should be
+        interpreted similarly as the corresponding definitions in
+        'sample_name.genes.results'.
+
+    sample_name.transcript.bam
+        Only generated when --no-bam-output is not specified.
+
+        'sample_name.transcript.bam' is a BAM-formatted file of read
+        alignments in transcript coordinates. The MAPQ field of each
+        alignment is set to min(100, floor(-10 * log10(1.0 - w) + 0.5)),
+        where w is the posterior probability of that alignment being the
+        true mapping of a read. In addition, RSEM pads a new tag ZW:f:value,
+        where value is a single precision floating number representing the
+        posterior probability. Because this file contains all alignment
+        lines produced by bowtie or user-specified aligners, it can also be
+        used as a replacement of the aligner generated BAM/SAM file.
+
+    sample_name.transcript.sorted.bam and
+    sample_name.transcript.sorted.bam.bai
+        Only generated when --no-bam-output is not specified and
+        --sort-bam-by-coordinate is specified.
+
+        'sample_name.transcript.sorted.bam' and
+        'sample_name.transcript.sorted.bam.bai' are the sorted BAM file and
+        indices generated by samtools (included in RSEM package).
+
+    sample_name.genome.bam
+        Only generated when --no-bam-output is not specified and
+        --output-genome-bam is specified.
+
+        'sample_name.genome.bam' is a BAM-formatted file of read alignments
+        in genomic coordinates. Alignments of reads that have identical
+        genomic coordinates (i.e., alignments to different isoforms that
+        share the same genomic region) are collapsed into one alignment. The
+        MAPQ field of each alignment is set to min(100, floor(-10 *
+        log10(1.0 - w) + 0.5)), where w is the posterior probability of that
+        alignment being the true mapping of a read. In addition, RSEM pads a
+        new tag ZW:f:value, where value is a single precision floating
+        number representing the posterior probability. If an alignment is
+        spliced, a XS:A:value tag is also added, where value is either '+'
+        or '-' indicating the strand of the transcript it aligns to.
+
+    sample_name.genome.sorted.bam and sample_name.genome.sorted.bam.bai
+        Only generated when --no-bam-output is not specified, and
+        --sort-bam-by-coordinate and --output-genome-bam are specified.
+
+        'sample_name.genome.sorted.bam' and
+        'sample_name.genome.sorted.bam.bai' are the sorted BAM file and
+        indices generated by samtools (included in RSEM package).
+
+    sample_name.time
+        Only generated when --time is specified.
+
+        It contains time (in seconds) consumed by aligning reads, estimating
+        expression levels and calculating credibility intervals.
+
+    sample_name.stat
+        This is a folder instead of a file. All model related statistics are
+        stored in this folder. Use 'rsem-plot-model' can generate plots
+        using this folder.
+
+        'sample_name.stat/sample_name.cnt' contains alignment statistics.
+        The format and meanings of each field are described in
+        'cnt_file_description.txt' under RSEM directory.
+
+        'sample_name.stat/sample_name.model' stores RNA-Seq model parameters
+        learned from the data. The format and meanings of each filed of this
+        file are described in 'model_file_description.txt' under RSEM
+        directory.
+
+EXAMPLES
+    Assume the path to the bowtie executables is in the user's PATH
+    environment variable. Reference files are under '/ref' with name
+    'mouse_125'.
+
+    1) '/data/mmliver.fq', single-end reads with quality scores. Quality
+    scores are encoded as for 'GA pipeline version >= 1.3'. We want to use 8
+    threads and generate a genome BAM file. In addition, we want to append
+    gene/transcript names to the result files:
+
+     rsem-calculate-expression --phred64-quals \
+                               -p 8 \
+                               --append-names \
+                               --output-genome-bam \
+                               /data/mmliver.fq \
+                               /ref/mouse_125 \
+                               mmliver_single_quals
+
+    2) '/data/mmliver_1.fq' and '/data/mmliver_2.fq', paired-end reads with
+    quality scores. Quality scores are in SANGER format. We want to use 8
+    threads and do not generate a genome BAM file:
+
+     rsem-calculate-expression -p 8 \
+                               --paired-end \
+                               /data/mmliver_1.fq \
+                               /data/mmliver_2.fq \
+                               /ref/mouse_125 \
+                               mmliver_paired_end_quals
+
+    3) '/data/mmliver.fa', single-end reads without quality scores. We want
+    to use 8 threads:
+
+     rsem-calculate-expression -p 8 \
+                               --no-qualities \
+                               /data/mmliver.fa \
+                               /ref/mouse_125 \
+                               mmliver_single_without_quals
+
+    4) Data are the same as 1). This time we assume the bowtie executables
+    are under '/sw/bowtie'. We want to take a fragment length distribution
+    into consideration. We set the fragment length mean to 150 and the
+    standard deviation to 35. In addition to a BAM file, we also want to
+    generate credibility intervals. We allow RSEM to use 1GB of memory for
+    CI calculation:
+
+     rsem-calculate-expression --bowtie-path /sw/bowtie \
+                               --phred64-quals \
+                               --fragment-length-mean 150.0 \
+                               --fragment-length-sd 35.0 \
+                               -p 8 \
+                               --output-genome-bam \
+                               --calc-ci \
+                               --ci-memory 1024 \
+                               /data/mmliver.fq \
+                               /ref/mouse_125 \
+                               mmliver_single_quals
+
+    5) '/data/mmliver_paired_end_quals.bam', BAM-formatted alignments for
+    paired-end reads with quality scores. We want to use 8 threads:
+
+     rsem-calculate-expression --paired-end \
+                               --alignments \
+                               -p 8 \
+                               /data/mmliver_paired_end_quals.bam \
+                               /ref/mouse_125 \
+                               mmliver_paired_end_quals
+
+    6) '/data/mmliver_1.fq.gz' and '/data/mmliver_2.fq.gz', paired-end reads
+    with quality scores and read files are compressed by gzip. We want to
+    use STAR to aligned reads and assume STAR executable is '/sw/STAR'.
+    Suppose we want to use 8 threads and do not generate a genome BAM file:
+
+     rsem-calculate-expression --paired-end \
+                               --star \
+                               --star-path /sw/STAR \
+                               --gzipped-read-file \
+                               -p 8 \
+                               /data/mmliver_1.fq.gz \
+                               /data/mmliver_2.fq.gz \
+                               /ref/mouse_125 \
+                               mmliver_paired_end_quals
+
+bowtie
+No index, query, or output file specified!
+Usage:
+bowtie [options]* -x <ebwt> {-1 <m1> -2 <m2> | --12 <r> | --interleaved <i> | <s>} [<hit>]
+
+  <ebwt>  Index filename prefix (minus trailing .X.ebwt).
+  <m1>    Comma-separated list of files containing upstream mates (or the
+          sequences themselves, if -c is set) paired with mates in <m2>
+  <m2>    Comma-separated list of files containing downstream mates (or the
+          sequences themselves if -c is set) paired with mates in <m1>
+  <r>     Comma-separated list of files containing Crossbow-style reads.  Can be
+          a mixture of paired and unpaired.  Specify "-" for stdin.
+  <i>     Files with interleaved paired-end FASTQ reads.
+  <s>     Comma-separated list of files containing unpaired reads, or the
+          sequences themselves, if -c is set.  Specify "-" for stdin.
+  <hit>   File to write hits to (default: stdout)
+Input:
+  -q                 query input files are FASTQ .fq/.fastq (default)
+  -f                 query input files are (multi-)FASTA .fa/.mfa
+  -F k:<int>,i:<int> query input files are continuous FASTA where reads
+                     are substrings (k-mers) extracted from a FASTA file <s>
+                     and aligned at offsets 1, 1+i, 1+2i ... end of reference
+  -r                 query input files are raw one-sequence-per-line
+  -c                 query sequences given on cmd line (as <mates>, <singles>)
+  -Q/--quals <file>  QV file(s) corresponding to CSFASTA inputs; use with -f -C
+  --Q1/--Q2 <file>   same as -Q, but for mate files 1 and 2 respectively
+  -s/--skip <int>    skip the first <int> reads/pairs in the input
+  -u/--qupto <int>   stop after first <int> reads/pairs (excl. skipped reads)
+  -5/--trim5 <int>   trim <int> bases from 5' (left) end of reads
+  -3/--trim3 <int>   trim <int> bases from 3' (right) end of reads
+  --phred33-quals    input quals are Phred+33 (default)
+  --phred64-quals    input quals are Phred+64 (same as --solexa1.3-quals)
+  --solexa-quals     input quals are from GA Pipeline ver. < 1.3
+  --solexa1.3-quals  input quals are from GA Pipeline ver. >= 1.3
+  --integer-quals    qualities are given as space-separated integers (not ASCII)
+  --large-index      force usage of a 'large' index, even if a small one is present
+Alignment:
+  -v <int>           report end-to-end hits w/ <=v mismatches; ignore qualities
+    or
+  -n/--seedmms <int> max mismatches in seed (can be 0-3, default: -n 2)
+  -e/--maqerr <int>  max sum of mismatch quals across alignment for -n (def: 70)
+  -l/--seedlen <int> seed length for -n (default: 28)
+  --nomaqround       disable Maq-like quality rounding for -n (nearest 10 <= 30)
+  -I/--minins <int>  minimum insert size for paired-end alignment (default: 0)
+  -X/--maxins <int>  maximum insert size for paired-end alignment (default: 250)
+  --fr/--rf/--ff     -1, -2 mates align fw/rev, rev/fw, fw/fw (default: --fr)
+  --nofw/--norc      do not align to forward/reverse-complement reference strand
+  --maxbts <int>     max # backtracks for -n 2/3 (default: 125, 800 for --best)
+  --pairtries <int>  max # attempts to find mate for anchor hit (default: 100)
+  -y/--tryhard       try hard to find valid alignments, at the expense of speed
+  --chunkmbs <int>   max megabytes of RAM for best-first search frames (def: 64)
+ --reads-per-batch   # of reads to read from input file at once (default: 16)
+Reporting:
+  -k <int>           report up to <int> good alignments per read (default: 1)
+  -a/--all           report all alignments per read (much slower than low -k)
+  -m <int>           suppress all alignments if > <int> exist (def: no limit)
+  -M <int>           like -m, but reports 1 random hit (MAPQ=0); requires --best
+  --best             hits guaranteed best stratum; ties broken by quality
+  --strata           hits in sub-optimal strata aren't reported (requires --best)
+Output:
+  -t/--time          print wall-clock time taken by search phases
+  -B/--offbase <int> leftmost ref offset = <int> in bowtie output (default: 0)
+  --quiet            print nothing but the alignments
+  --refidx           refer to ref. seqs by 0-based index rather than name
+  --al <fname>       write aligned reads/pairs to file(s) <fname>
+  --un <fname>       write unaligned reads/pairs to file(s) <fname>
+  --no-unal          suppress SAM records for unaligned reads
+  --max <fname>      write reads/pairs over -m limit to file(s) <fname>
+  --suppress <cols>  suppresses given columns (comma-delim'ed) in default output
+  --fullref          write entire ref name (default: only up to 1st space)
+SAM:
+  -S/--sam           write hits in SAM format
+  --mapq <int>       default mapping quality (MAPQ) to print for SAM alignments
+  --sam-nohead       supppress header lines (starting with @) for SAM output
+  --sam-nosq         supppress @SQ header lines for SAM output
+  --sam-RG <text>    add <text> (usually "lab=value") to @RG line of SAM header
+Performance:
+  -o/--offrate <int> override offrate of index; must be >= index's offrate
+  -p/--threads <int> number of alignment threads to launch (default: 1)
+  --mm               use memory-mapped I/O for index; many 'bowtie's can share
+  --shmem            use shared mem for index; many 'bowtie's can share
+Other:
+  --seed <int>       seed for random number generator
+  --verbose          verbose output (for debugging)
+  --version          print version information and quit
+  -h/--help          print this usage message
+(base) shuping@lihengde:/mnt/disk2/shuping$ ^C
+(base) shuping@lihengde:/mnt/disk2/shuping$ bowtie -h
+usage: bowtie [-h] [--verbose] [--debug] [--large-index]
+
+options:
+  -h, --help     show this help message and exit
+  --verbose
+  --debug
+  --large-index
+(base) shuping@lihengde:/mnt/disk2/shuping$ bowtie2
+No index, query, or output file specified!
+Bowtie 2 version 2.5.1 by Ben Langmead (langmea@cs.jhu.edu, www.cs.jhu.edu/~langmea)
+Usage:
+  bowtie2 [options]* -x <bt2-idx> {-1 <m1> -2 <m2> | -U <r> | --interleaved <i> | -b <bam>} [-S <sam>]
+
+  <bt2-idx>  Index filename prefix (minus trailing .X.bt2).
+             NOTE: Bowtie 1 and Bowtie 2 indexes are not compatible.
+  <m1>       Files with #1 mates, paired with files in <m2>.
+             Could be gzip'ed (extension: .gz) or bzip2'ed (extension: .bz2).
+  <m2>       Files with #2 mates, paired with files in <m1>.
+             Could be gzip'ed (extension: .gz) or bzip2'ed (extension: .bz2).
+  <r>        Files with unpaired reads.
+             Could be gzip'ed (extension: .gz) or bzip2'ed (extension: .bz2).
+  <i>        Files with interleaved paired-end FASTQ/FASTA reads
+             Could be gzip'ed (extension: .gz) or bzip2'ed (extension: .bz2).
+  <bam>      Files are unaligned BAM sorted by read name.
+  <sam>      File for SAM output (default: stdout)
+
+  <m1>, <m2>, <r> can be comma-separated lists (no whitespace) and can be
+  specified many times.  E.g. '-U file1.fq,file2.fq -U file3.fq'.
+
+Options (defaults in parentheses):
+
+ Input:
+  -q                 query input files are FASTQ .fq/.fastq (default)
+  --tab5             query input files are TAB5 .tab5
+  --tab6             query input files are TAB6 .tab6
+  --qseq             query input files are in Illumina's qseq format
+  -f                 query input files are (multi-)FASTA .fa/.mfa
+  -r                 query input files are raw one-sequence-per-line
+  -F k:<int>,i:<int> query input files are continuous FASTA where reads
+                     are substrings (k-mers) extracted from a FASTA file <s>
+                     and aligned at offsets 1, 1+i, 1+2i ... end of reference
+  -c                 <m1>, <m2>, <r> are sequences themselves, not files
+  -s/--skip <int>    skip the first <int> reads/pairs in the input (none)
+  -u/--upto <int>    stop after first <int> reads/pairs (no limit)
+  -5/--trim5 <int>   trim <int> bases from 5'/left end of reads (0)
+  -3/--trim3 <int>   trim <int> bases from 3'/right end of reads (0)
+  --trim-to [3:|5:]<int> trim reads exceeding <int> bases from either 3' or 5' end
+                     If the read end is not specified then it defaults to 3 (0)
+  --phred33          qualities are Phred+33 (default)
+  --phred64          qualities are Phred+64
+  --int-quals        qualities encoded as space-delimited integers
+
+ Presets:                 Same as:
+  For --end-to-end:
+   --very-fast            -D 5 -R 1 -N 0 -L 22 -i S,0,2.50
+   --fast                 -D 10 -R 2 -N 0 -L 22 -i S,0,2.50
+   --sensitive            -D 15 -R 2 -N 0 -L 22 -i S,1,1.15 (default)
+   --very-sensitive       -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+
+  For --local:
+   --very-fast-local      -D 5 -R 1 -N 0 -L 25 -i S,1,2.00
+   --fast-local           -D 10 -R 2 -N 0 -L 22 -i S,1,1.75
+   --sensitive-local      -D 15 -R 2 -N 0 -L 20 -i S,1,0.75 (default)
+   --very-sensitive-local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+
+ Alignment:
+  -N <int>           max # mismatches in seed alignment; can be 0 or 1 (0)
+  -L <int>           length of seed substrings; must be >3, <32 (22)
+  -i <func>          interval between seed substrings w/r/t read len (S,1,1.15)
+  --n-ceil <func>    func for max # non-A/C/G/Ts permitted in aln (L,0,0.15)
+  --dpad <int>       include <int> extra ref chars on sides of DP table (15)
+  --gbar <int>       disallow gaps within <int> nucs of read extremes (4)
+  --ignore-quals     treat all quality values as 30 on Phred scale (off)
+  --nofw             do not align forward (original) version of read (off)
+  --norc             do not align reverse-complement version of read (off)
+  --no-1mm-upfront   do not allow 1 mismatch alignments before attempting to
+                     scan for the optimal seeded alignments
+  --end-to-end       entire read must align; no clipping (on)
+   OR
+  --local            local alignment; ends might be soft clipped (off)
+
+ Scoring:
+  --ma <int>         match bonus (0 for --end-to-end, 2 for --local)
+  --mp <int>         max penalty for mismatch; lower qual = lower penalty (6)
+  --np <int>         penalty for non-A/C/G/Ts in read/ref (1)
+  --rdg <int>,<int>  read gap open, extend penalties (5,3)
+  --rfg <int>,<int>  reference gap open, extend penalties (5,3)
+  --score-min <func> min acceptable alignment score w/r/t read length
+                     (G,20,8 for local, L,-0.6,-0.6 for end-to-end)
+
+ Reporting:
+  (default)          look for multiple alignments, report best, with MAPQ
+   OR
+  -k <int>           report up to <int> alns per read; MAPQ not meaningful
+   OR
+  -a/--all           report all alignments; very slow, MAPQ not meaningful
+
+ Effort:
+  -D <int>           give up extending after <int> failed extends in a row (15)
+  -R <int>           for reads w/ repetitive seeds, try <int> sets of seeds (2)
+
+ Paired-end:
+  -I/--minins <int>  minimum fragment length (0)
+  -X/--maxins <int>  maximum fragment length (500)
+  --fr/--rf/--ff     -1, -2 mates align fw/rev, rev/fw, fw/fw (--fr)
+  --no-mixed         suppress unpaired alignments for paired reads
+  --no-discordant    suppress discordant alignments for paired reads
+  --dovetail         concordant when mates extend past each other
+  --no-contain       not concordant when one mate alignment contains other
+  --no-overlap       not concordant when mates overlap at all
+
+ BAM:
+  --align-paired-reads
+                     Bowtie2 will, by default, attempt to align unpaired BAM reads.
+                     Use this option to align paired-end reads instead.
+  --preserve-tags    Preserve tags from the original BAM record by
+                     appending them to the end of the corresponding SAM output.
+
+ Output:
+  -t/--time          print wall-clock time taken by search phases
+  --un <path>        write unpaired reads that didn't align to <path>
+  --al <path>        write unpaired reads that aligned at least once to <path>
+  --un-conc <path>   write pairs that didn't align concordantly to <path>
+  --al-conc <path>   write pairs that aligned concordantly at least once to <path>
+    (Note: for --un, --al, --un-conc, or --al-conc, add '-gz' to the option name, e.g.
+    --un-gz <path>, to gzip compress output, or add '-bz2' to bzip2 compress output.)
+  --quiet            print nothing to stderr except serious errors
+  --met-file <path>  send metrics to file at <path> (off)
+  --met-stderr       send metrics to stderr (off)
+  --met <int>        report internal counters & metrics every <int> secs (1)
+  --no-unal          suppress SAM records for unaligned reads
+  --no-head          suppress header lines, i.e. lines starting with @
+  --no-sq            suppress @SQ header lines
+  --rg-id <text>     set read group id, reflected in @RG line and RG:Z: opt field
+  --rg <text>        add <text> ("lab:value") to @RG line of SAM header.
+                     Note: @RG line only printed when --rg-id is set.
+  --omit-sec-seq     put '*' in SEQ and QUAL fields for secondary alignments.
+  --sam-no-qname-trunc
+                     Suppress standard behavior of truncating readname at first whitespace
+                     at the expense of generating non-standard SAM.
+  --xeq              Use '='/'X', instead of 'M,' to specify matches/mismatches in SAM record.
+  --soft-clipped-unmapped-tlen
+                     Exclude soft-clipped bases when reporting TLEN
+  --sam-append-comment
+                     Append FASTA/FASTQ comment to SAM record
+
+ Performance:
+  -p/--threads <int> number of alignment threads to launch (1)
+  --reorder          force SAM output order to match order of input reads
+  --mm               use memory-mapped I/O for index; many 'bowtie's can share
+
+ Other:
+  --qc-filter        filter out reads that are bad according to QSEQ filter
+  --seed <int>       seed for random number generator (0)
+  --non-deterministic
+                     seed rand. gen. arbitrarily instead of using read attributes
+  --version          print version information and quit
+  -h/--help          print this usage message
+(ERR): bowtie2-align exited with value 1
+用法：
+
+bowtie2[选项]*-x<bt2-idx>{-1<m1>-2<m2>|-U<r>|--交错<i>|-b<bam>}[-S<sam>]
+
+
+
+<bt2-idx>索引文件名前缀（减去尾随的.X.bt2）。
+
+注意：蝴蝶结1和蝴蝶结2索引不兼容。
+
+＜m1＞具有#1个伙伴的文件，与＜m2＞中的文件配对。
+
+可以是gzip‘ed（扩展名：.gz）或bzip2‘ed（扩充名：.bz2）。
+
+<m2>具有#2个伙伴的文件，与<m1>中的文件配对。
+
+可以是gzip‘ed（扩展名：.gz）或bzip2‘ed（扩充名：.bz2）。
+
+<r> 具有未成对读取的文件。
+
+可以是gzip‘ed（扩展名：.gz）或bzip2‘ed（扩充名：.bz2）。
+
+<i> 具有交错成对端FASTQ/FASTA读取的文件
+
+可以是gzip‘ed（扩展名：.gz）或bzip2‘ed（扩充名：.bz2）。
+
+<bam>文件是未对齐的bam，按读取名称排序。
+
+＜sam＞sam输出的文件（默认值：stdout）
+
+
+
+<m1>、<m2>、<r>可以是逗号分隔的列表（没有空格），并且可以
+
+多次指定。例如“-U文件1.fq，文件2.fq-U文件3.fq”。
+
+
+
+选项（括号中的默认值）：
+
+
+
+输入：
+
+-q查询输入文件为FASTQ.fq/.FASTQ（默认值）
+
+--tab5查询输入文件为tab5.tab5
+
+--tab6查询输入文件为tab6.tab6
+
+--qseq查询输入文件采用Illumina的qseq格式
+
+-f查询输入文件是（多）FASTA.fa/.mfa
+
+-r查询输入文件是原始的，每行一个序列
+
+-Fk:<int>，i:<int]查询输入文件是连续的FASTA，其中读取
+
+是从FASTA文件中提取的子串（k-mers）<s>
+
+并且在偏移1、1+i、1+2i处对齐。。。参考结束
+
+-c<m1>、<m2>、<r>本身是序列，而不是文件
+
+-s/--跳过＜int＞跳过输入中的第一个＜int＞读取/对（无）
+
+-u/——在第一次<int>读取/对后停止<int>（无限制）
+
+-5/--trim5<int>trim<int>从读取的5'/左端开始的基数（0）
+
+-3/-trim3<int>trim<int>从读取的3'/右端开始的基数（0）
+
+--trim到[3:|5:]<int>trim从3'或5'端读取超过<int>碱基
+
+如果未指定读取结束，则默认为3（0）
+
+--phred33质量为Phred+33（默认值）
+
+--phred64品质为Phred+64
+
+--以空格分隔的整数编码的整数质量
+
+
+
+预设：与相同：
+
+对于端到端：
+
+--非常快-D 5-R 1-N 0-L 22-i S，0,2.50
+
+--快速-D 10-R 2-N 0-L 22-i S，0,2.50
+
+--敏感-D 15-R 2-N 0-L 22-i S，1，1.15（默认值）
+
+--非常灵敏-D 20-R 3-N 0-L 20-i S，1,0.50
+
+
+
+对于--本地：
+
+--非常快的本地-D 5-R 1-N 0-L 25-i S，1,2.00
+
+--快速局部-D 10-R 2-N 0-L 22-i S，1,1.75
+
+--敏感本地-D 15-R 2-N 0-L 20-i S，1,0.75（默认值）
+
+--非常灵敏的局部-D 20-R 3-N 0-L 20-i S，1,0.50
+
+
+
+对齐方式：
+
+-N<int>max#种子排列中的不匹配；可以是0或1（0）
+
+-L<int>种子子串的长度；必须大于3，小于32（22）
+
+-i＜func＞种子子串w/r/t读取len之间的间隔（S，1,1.15）
+
+--n-ceil＜func＞在aln（L，0,0.15）中允许的最大#非A/C/G/Ts的func
+
+--dpad＜int＞在DP表的两侧包含＜int＞额外的ref字符（15）
+
+--gbar<int>禁止读取极值的<int>nucs内的间隙（4）
+
+--忽略quals将Phred刻度上的所有质量值视为30（禁用）
+
+--nofw不对齐读取（关闭）的前向（原始）版本
+
+--norc不对齐读取（off）的反向补码版本
+
+--no-1mm-upfront在尝试之前不允许1个不匹配的对齐
+
+扫描最佳种子排列
+
+--端到端的完整读取必须对齐；无剪辑（打开）
+
+或者
+
+--局部局部线形；末端可能被软夹住
+
+
+
+评分：
+
+--ma＜int＞匹配奖金（0表示端到端，2表示本地）
+
+--mp＜int＞不匹配的最大惩罚；较低的qual=较低的惩罚（6）
+
+--np<int>read/ref中非A/C/G/Ts的惩罚（1）
+
+--rdg<int>，<int>读取空位，延长点球（5,3）
+
+--rfg<int>，<int>参考差距打开，延长处罚（5,3）
+
+--score最小<func>最小可接受对齐分数w/r/t读取长度
+
+（G，20,8表示本地，L，-0.6，-0.6表示端到端）
+
+
+
+报告：
+
+（默认）使用MAPQ查找多条路线，报告最佳
+
+或者
+
+-k＜int＞每次读取最多报告＜int＞aln；MAPQ没有意义
+
+或者
+
+-a/——所有报告所有对齐；非常慢，MAPQ没有意义
+
+
+
+努力：
+
+-D＜int＞在＜int＞连续扩展失败后放弃扩展（15）
+
+-R＜int＞对于带有重复种子的读取，请尝试＜int＞种子集（2）
+
+
+
+配对端：
+
+-I/-最小片段长度（0）
+
+-X/-最大片段长度（500）
+--fr/--rf/--ff-1，-2个配对对齐fw/rev，rev/fw，fw/fw（-fr）
+
+--无混合抑制成对读取的未成对对齐
+
+--无不和谐抑制成对读数的不和谐排列
+
+--当配偶相互超越时，形成燕尾一致
+
+--当一个配对包含另一个时，不包含不一致
+
+--当配偶完全重叠时，没有重叠是不一致的
+
+
+
+砰：
+
+--对齐成对读取
+
+默认情况下，Bowtie2将尝试对齐未配对的BAM读取。
+
+使用此选项来对齐成对的末端读数。
+
+--保留标记根据保留原始BAM记录中的标记
+
+将它们附加到相应SAM输出的末尾。
+
+
+
+输出：
+
+-t/——时间打印搜索阶段占用的挂钟时间
+
+--un<path>写入未与<path>对齐的未成对读取
+
+--al＜path＞写入至少与＜path＞对齐一次的未成对读取
+
+--un-conc＜path＞写入与＜path＞不一致的对
+
+--al conc＜path＞写入至少一次与＜path＞一致对齐的对
+
+（注意：对于--un、--al、--un-con或--al-conc，请在选项名称中添加'-gz'，例如。
+
+--un-gz＜path＞，以gzip压缩输出，或将'-bz2'添加到bzip2压缩输出。）
+
+--quiet不向stderr打印任何内容，除非出现严重错误
+
+--met文件＜path＞将度量发送到＜path＞的文件（关闭）
+
+--符合stderr将指标发送到stderr（关闭）
+
+--met＜int＞每隔＜int＞秒报告内部计数器和度量（1）
+
+--没有为未对齐的读取取消SAM记录
+
+--无头抑制标题行，即以开头的行@
+
+--无平方抑制@平方标题行
+
+--rg id＜text＞设置读取组id，反映在@rg行和rg:Z:opt字段中
+
+--rg<text>将<text>（“lab:value”）添加到SAM标题的@rg行。
+
+注：@RG行仅在设置了--RG-id时打印。
+
+--省略sec-seq，将'*'放在seq和QUAL字段中进行二次比对。
+
+--sam无qname截断
+
+禁止在第一个空白处截断readname的标准行为
+
+以生成非标准SAM为代价。
+
+--xeq使用'='/'X'而不是'M'来指定SAM记录中的匹配/不匹配。
+
+--软剪裁未映射tlen
+
+报告TLEN时排除软剪裁碱基
+
+--sam附加注释
+
+将FASTA/FASTQ注释附加到SAM记录
+
+
+
+性能：
+
+-p/--threads＜int＞要启动的对齐线程数（1）
+
+--重新排序强制SAM输出顺序匹配输入读取顺序
+
+--mm使用内存映射I/O进行索引；许多蝴蝶结可以共享
+
+
+
+其他：
+
+--qc过滤器根据QSEQ过滤器过滤出不良读数
+
+--seed＜int＞随机数生成器的seed（0）
+
+--不确定性
+
+种子兰特。gen.任意，而不是使用读取属性
+
+--版本打印版本信息并退出
+
+-h/--帮助打印此用法消息
+
+（错误）：bowtie2 align退出，值为1
